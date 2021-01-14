@@ -1,9 +1,8 @@
 const http = require('http');
 const socketIo = require('socket.io');
 const Routes = require('./routes');
+const { logger } = require('./util');
 
-
-const { start } = require('repl');
 const PORT = 3000;
 
 const handler = function(request, response) {
@@ -14,26 +13,13 @@ const handler = function(request, response) {
 }
 
 const server = http.createServer(handler);
-const io = socketIo(server, {
-    cors: {
-        origin: '*',
-        credentials: false
-    }
-});
+const io = socketIo(server, { cors: { origin: '*', credentials: false } });
 
-io.on('connection', (socket) => console.log('someone connected', socket.id));
-
-/*
-const interval = setInterval(() => {
-    io.emit('file-uploaded', 5e6)
-}, 250);
-*/
-
-
+io.on('connection', (socket) => logger.info('someone connected ' + socket.id));
 
 const startServer = () => {
     const { address, port} = server.address();
-    console.log(`App running at http://${address}:${port}`)
+    logger.info(`App running at http://${address}:${port}`)
 }
 
 server.listen(PORT, startServer);
